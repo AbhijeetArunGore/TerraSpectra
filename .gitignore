@@ -13,6 +13,8 @@ __pycache__/
 .coverage
 htmlcov/
 .mypy_cache/
+*.egg-info/
+
 
 # Hyperspectral Data & Raw Files (Large binary files kept out of Git)
 data/raw/

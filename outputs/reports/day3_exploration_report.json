@@ -1,0 +1,113 @@
+{
+  "spatial_dimensions": [
+    512,
+    217
+  ],
+  "spectral_bands": 204,
+  "cube_dtype": "int16",
+  "labels_dtype": "uint8",
+  "georeferencing_status": "No geospatial CRS, affine transform, or GPS coordinates are stored in the Salinas .mat file. Spatial coordinates are strictly 2D array row/column pixel coordinates: Rows 0..511, Columns 0..216.",
+  "coordinate_system": "Pixel Grid Coordinates (Rows: 512, Columns: 217, Bands: 204)",
+  "quality_audit": {
+    "total_pixels": 111104,
+    "nan_count": 0,
+    "inf_count": 0,
+    "min_value": -11.0,
+    "max_value": 9207.0,
+    "mean_value": 1196.4004,
+    "std_value": 1098.4005,
+    "is_finite": true
+  },
+  "class_distribution": {
+    "0": {
+      "class_name": "Unclassified",
+      "pixel_count": 56975,
+      "percentage": 51.28
+    },
+    "1": {
+      "class_name": "Broccoli_green_weeds_1",
+      "pixel_count": 2009,
+      "percentage": 1.81
+    },
+    "2": {
+      "class_name": "Broccoli_green_weeds_2",
+      "pixel_count": 3726,
+      "percentage": 3.35
+    },
+    "3": {
+      "class_name": "Fallow",
+      "pixel_count": 1976,
+      "percentage": 1.78
+    },
+    "4": {
+      "class_name": "Fallow_rough_plow",
+      "pixel_count": 1394,
+      "percentage": 1.25
+    },
+    "5": {
+      "class_name": "Fallow_smooth",
+      "pixel_count": 2678,
+      "percentage": 2.41
+    },
+    "6": {
+      "class_name": "Stubble",
+      "pixel_count": 3959,
+      "percentage": 3.56
+    },
+    "7": {
+      "class_name": "Celery",
+      "pixel_count": 3579,
+      "percentage": 3.22
+    },
+    "8": {
+      "class_name": "Grapes_untrained",
+      "pixel_count": 11271,
+      "percentage": 10.14
+    },
+    "9": {
+      "class_name": "Soil_vinyard_develop",
+      "pixel_count": 6203,
+      "percentage": 5.58
+    },
+    "10": {
+      "class_name": "Corn_senesced_green_weeds",
+      "pixel_count": 3278,
+      "percentage": 2.95
+    },
+    "11": {
+      "class_name": "Lettuce_romaine_4wk",
+      "pixel_count": 1068,
+      "percentage": 0.96
+    },
+    "12": {
+      "class_name": "Lettuce_romaine_5wk",
+      "pixel_count": 1927,
+      "percentage": 1.73
+    },
+    "13": {
+      "class_name": "Lettuce_romaine_6wk",
+      "pixel_count": 916,
+      "percentage": 0.82
+    },
+    "14": {
+      "class_name": "Lettuce_romaine_7wk",
+      "pixel_count": 1070,
+      "percentage": 0.96
+    },
+    "15": {
+      "class_name": "Vinyard_untrained",
+      "pixel_count": 7268,
+      "percentage": 6.54
+    },
+    "16": {
+      "class_name": "Vinyard_vertical_trellis",
+      "pixel_count": 1807,
+      "percentage": 1.63
+    }
+  },
+  "false_color_bands_used": [
+    45,
+    25,
+    15
+  ]
+}

@@ -6,6 +6,12 @@ from terraspectra.data.loader import (
     DatasetMetadata,
     load_salinas_data,
     create_synthetic_salinas_fixture,
+    SALINAS_CLASS_NAMES,
+)
+from terraspectra.data.exploration import (
+    HyperspectralExplorer,
+    QualityAuditReport,
+    ExplorationSummary,
 )
 
 __all__ = [
@@ -14,4 +20,9 @@ __all__ = [
     "DatasetMetadata",
     "load_salinas_data",
     "create_synthetic_salinas_fixture",
+    "SALINAS_CLASS_NAMES",
+    "HyperspectralExplorer",
+    "QualityAuditReport",
+    "ExplorationSummary",
 ]
+
