@@ -98,30 +98,46 @@ pip install -r requirements.txt
 pip install -e .
 ```
 
-### 2. Running Pipeline Steps
+### 2. Interactive Learning Notebooks
+
+Explore each day's concepts and step-by-step verified outputs:
+
+- [`notebooks/day02_data_loading.ipynb`](notebooks/day02_data_loading.ipynb): Ingesting and validating Salinas `.mat` data.
+- [`notebooks/day03_data_exploration.ipynb`](notebooks/day03_data_exploration.ipynb): Numerical health audits, spectral curves, and false-color compositing.
+- [`notebooks/day04_pca.ipynb`](notebooks/day04_pca.ipynb): Hughes phenomenon, PCA reduction, scree plots, and variance analysis.
+- [`notebooks/day05_normalization.ipynb`](notebooks/day05_normalization.ipynb): Standardization vs. Min-Max scaling, zero-variance safeguards, and model persistence.
+
+To launch Jupyter Lab / Notebook:
+```bash
+jupyter lab notebooks/
+```
+
+### 3. Running Pipeline Scripts
 
 ```bash
-# Day 2: Ingest Salinas dataset (downloads or verifies local data)
+# Day 2: Ingest Salinas dataset (verifies or auto-downloads to data/raw/)
 python scripts/run_day2_ingest.py
 
 # Day 3: Dataset exploration and false-color composite generation
 python scripts/run_day3_explore.py
 
-# Day 4: PCA dimensionality reduction
+# Day 4: PCA dimensionality reduction (15 components)
 python scripts/run_day4_pca.py --n-components 15
 
-# Day 5: Feature normalization and scaling
+# Day 5: Feature normalization and scaling (standard or minmax)
 python scripts/run_day5_scale.py --method standard
+python scripts/run_day5_scale.py --method minmax
 
-# Run all test suites
+# Run all 18 automated test suites
 pytest
 ```
 
-### 3. Running the React Frontend (Day 6)
+### 4. Running the React Frontend (Day 6)
 
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
-Navigate to `http://localhost:5173` to view the Deck.gl hyperspectral visualizer.
+Navigate to `http://localhost:5173` to view the Deck.gl hyperspectral visualizer (Orthographic 2D array coordinates, supporting Classification, False-Color, and PCA-1 layers).
+
