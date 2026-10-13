@@ -1,0 +1,49 @@
+{
+  "n_components": 15,
+  "original_bands": 204,
+  "total_explained_variance_percent": 99.979,
+  "explained_variance_ratio": [
+    74.473,
+    23.532,
+    1.134,
+    0.54,
+    0.173,
+    0.055,
+    0.024,
+    0.015,
+    0.009,
+    0.006,
+    0.004,
+    0.004,
+    0.003,
+    0.003,
+    0.002
+  ],
+  "cumulative_variance_ratio": [
+    74.473,
+    98.005,
+    99.139,
+    99.68,
+    99.853,
+    99.908,
+    99.932,
+    99.947,
+    99.956,
+    99.962,
+    99.966,
+    99.97,
+    99.974,
+    99.976,
+    99.979
+  ],
+  "reduced_cube_shape": [
+    512,
+    217,
+    15
+  ],
+  "reduced_samples_shape": [
+    111104,
+    15
+  ],
+  "is_exploratory": true
+}
