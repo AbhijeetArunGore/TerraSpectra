@@ -1,0 +1,41 @@
+{
+  "method": "minmax",
+  "feature_count": 15,
+  "means_or_mins": [
+    -13736.3311,
+    -14190.6514,
+    -3061.7266,
+    -9464.8086,
+    -5201.5757,
+    -3869.4863,
+    -1154.2029,
+    -1313.1964,
+    -1326.5135,
+    -5836.5781,
+    -465.926,
+    -297.5599,
+    -355.7916,
+    -249.316,
+    -568.0201
+  ],
+  "scales_or_ranges": [
+    33929.4219,
+    55262.832,
+    8863.8096,
+    14184.5723,
+    7721.8564,
+    4974.7964,
+    2922.8662,
+    2718.8125,
+    2146.2803,
+    7003.3481,
+    2071.9021,
+    7974.9185,
+    757.6523,
+    1124.8536,
+    3182.4287
+  ],
+  "constant_features_detected": [],
+  "is_fitted": true,
+  "documentation": "Min-Max Normalization: Scales features linearly into range (0.0, 1.0). Guarantees bounded inputs (e.g. for RGB visualization or bounded neural activations), but sensitive to extreme outlier values."
+}
