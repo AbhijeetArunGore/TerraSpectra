@@ -1,0 +1,38 @@
+# Python Virtual Environments
+.venv/
+venv/
+env/
+ENV/
+
+# Python Cache & Bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+
+# Hyperspectral Data & Raw Files (Large binary files kept out of Git)
+data/raw/
+*.mat
+*.tar.gz
+*.zip
+
+# Processed intermediate heavy files (keep Git lightweight)
+data/processed/
+outputs/models/*.joblib
+outputs/data/
+
+# Frontend dependencies and builds
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# IDE & OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
