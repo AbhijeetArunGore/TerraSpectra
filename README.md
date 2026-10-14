@@ -32,6 +32,13 @@ TerraSpectra is an end-to-end hyperspectral remote sensing platform. This reposi
 - **Day 6: React Frontend Scaffold & Deck.gl**
   - Vite + React + TypeScript web application (`frontend/`).
   - Deck.gl spatial pixel grid rendering without fabricated geographic projections.
+- **Day 7: Geographical Base Map Foundation**
+  - Interactive Web Mercator (`EPSG:3857`) basemap using MapLibre GL JS and Deck.gl `MapboxOverlay`.
+  - Token-free default basemaps (CARTO Dark Matter, CARTO Positron, OpenStreetMap) with proper attribution.
+  - Optional Mapbox GL integration via `VITE_MAPBOX_ACCESS_TOKEN` in `frontend/.env`.
+  - Regional Salinas Valley demonstration extent (`[-121.6555°, 36.6777°]`, zoom 10.5).
+  - Explicit distinction between WGS84 geographic coordinates and raw 512x217 raster array indices.
+  - View mode toggling between Geographical Base Map (Day 7) and Orthographic Raster Scene (Day 6).
 
 ---
 
@@ -132,12 +139,26 @@ python scripts/run_day5_scale.py --method minmax
 pytest
 ```
 
-### 4. Running the React Frontend (Day 6)
+### 4. Running the React Frontend (Day 6 & Day 7)
 
 ```bash
 cd frontend
+
+# Install dependencies (React, Deck.gl, MapLibre GL)
 npm install
+
+# Optional: configure Mapbox token (copy template)
+cp .env.example .env
+# Edit .env and set VITE_MAPBOX_ACCESS_TOKEN if using custom Mapbox styles
+
+# Launch Vite development server
 npm run dev
 ```
-Navigate to `http://localhost:5173` to view the Deck.gl hyperspectral visualizer (Orthographic 2D array coordinates, supporting Classification, False-Color, and PCA-1 layers).
+
+Navigate to `http://localhost:5173` to explore:
+- **Geographical Base Map (Day 7)**: True Web Mercator (`EPSG:3857`) basemap using MapLibre GL + Deck.gl `MapboxOverlay`. Includes interactive zoom/pan, HUD coordinates readout, reset view button, and basemap style switcher (CARTO Dark Matter, CARTO Positron, OpenStreetMap).
+- **Orthographic Raster Scene (Day 6)**: Raw 2D Cartesian array viewer (`0..216`, `0..511`) displaying Ground-Truth classification, False-Color composite, and PCA-1 intensity layers.
+
+For in-depth architectural details, see [`docs/day07_basemap.md`](docs/day07_basemap.md).
+
 
