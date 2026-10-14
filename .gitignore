@@ -32,9 +32,14 @@ frontend/node_modules/
 frontend/dist/
 frontend/.vite/
 
-# IDE & OS files
-.vscode/
-.idea/
-.DS_Store
-Thumbs.db
-desktop.ini
+# Environment variables and secrets
+.env
+.env.local
+.env.*.local
+frontend/.env
+frontend/.env.local
+frontend/.env.*.local
+
+# Miscellaneous User Artifacts
+*.pdf
+
