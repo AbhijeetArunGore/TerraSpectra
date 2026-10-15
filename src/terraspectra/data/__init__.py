@@ -13,6 +13,13 @@ from terraspectra.data.exploration import (
     QualityAuditReport,
     ExplorationSummary,
 )
+from terraspectra.data.patches import (
+    PatchSample,
+    extract_spatial_patch,
+    pad_cube_spatially,
+    validate_patch_parameters,
+    iter_pixel_patches,
+)
 
 __all__ = [
     "SalinasDataset",
@@ -24,5 +31,10 @@ __all__ = [
     "HyperspectralExplorer",
     "QualityAuditReport",
     "ExplorationSummary",
+    "PatchSample",
+    "extract_spatial_patch",
+    "pad_cube_spatially",
+    "validate_patch_parameters",
+    "iter_pixel_patches",
 ]
 
