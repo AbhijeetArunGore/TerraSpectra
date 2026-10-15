@@ -1,12 +1,12 @@
 # TerraSpectra 🛰️
 
-**Hyperspectral Data Engineering, Preprocessing, and Interactive Visualization Platform**
+**Hyperspectral Data Engineering, Preprocessing, Deep Learning, and Interactive Visualization Platform**
 
-TerraSpectra is an end-to-end hyperspectral remote sensing platform. This repository implements Days 1–6 of the 30-day roadmap, focusing on rigorous hyperspectral ingestion, validation, exploratory analysis, PCA dimensionality reduction, feature scaling, and a high-performance Deck.gl interactive visualization scaffold.
+TerraSpectra is an end-to-end hyperspectral remote sensing platform. This repository implements Days 1–8 of the 30-day roadmap, covering hyperspectral ingestion, validation, exploratory analysis, PCA dimensionality reduction, feature scaling, a high-performance Deck.gl interactive visualization scaffold, and a genuine 3D-CNN baseline architecture in PyTorch.
 
 ---
 
-## Roadmap Scope (Days 1–6)
+## Roadmap Scope (Days 1–8)
 
 - **Day 1: Repository & Python Environment**
   - Reproducible virtual environment and dependency configuration (`requirements.txt`, `pyproject.toml`).
@@ -39,6 +39,12 @@ TerraSpectra is an end-to-end hyperspectral remote sensing platform. This reposi
   - Regional Salinas Valley demonstration extent (`[-121.6555°, 36.6777°]`, zoom 10.5).
   - Explicit distinction between WGS84 geographic coordinates and raw 512x217 raster array indices.
   - View mode toggling between Geographical Base Map (Day 7) and Orthographic Raster Scene (Day 6).
+- **Day 8: 3D-CNN Baseline Architecture in PyTorch**
+  - Genuine 3D-CNN model architecture (`Hyperspectral3DCNN`) operating directly on 5D tensors `(B, C, D, H, W)` with spectral depth $D$ and spatial window $H \times W$.
+  - Spatial patch extraction utility with reflection/edge padding to handle image borders without border artifacts or eager memory exhaustion.
+  - Dual 3D convolution stages with BatchNorm3d, ReLU, and Adaptive 3D Average Pooling (`(1, 1, 1)`) decoupling spatial/spectral input sizes from dense classifier weights (~24.2k parameters).
+  - Verification on both raw 204-band spectral cubes and 15-band PCA-reduced cubes.
+  - Comprehensive unit test suite (forward pass, backward gradient propagation, shape checks, CPU execution) and step-by-step verified learning notebook.
 
 ---
 
@@ -56,7 +62,11 @@ Tetraspectra/
 │       ├── data/
 │       │   ├── __init__.py
 │       │   ├── loader.py        # Dataset loading, validation, downloading
-│       │   └── exploration.py   # Spectral inspection, signatures, false-color
+│       │   ├── exploration.py   # Spectral inspection, signatures, false-color
+│       │   └── patches.py       # Spatial patch extraction & reflection padding
+│       ├── models/
+│       │   ├── __init__.py
+│       │   └── cnn3d.py         # Hyperspectral 3D-CNN architecture & config
 │       ├── processing/
 │       │   ├── __init__.py
 │       │   ├── pca.py           # PCA dimensionality reduction
@@ -68,12 +78,21 @@ Tetraspectra/
 │   ├── run_day2_ingest.py
 │   ├── run_day3_explore.py
 │   ├── run_day4_pca.py
-│   └── run_day5_scale.py
+│   ├── run_day5_scale.py
+│   └── build_day08_notebook.py
 ├── tests/
 │   ├── test_loader.py
 │   ├── test_exploration.py
 │   ├── test_pca.py
-│   └── test_scaling.py
+│   ├── test_scaling.py
+│   ├── test_cnn3d.py
+│   └── test_patches.py
+├── notebooks/
+│   ├── day02_data_loading.ipynb
+│   ├── day03_data_exploration.ipynb
+│   ├── day04_pca.ipynb
+│   ├── day05_normalization.ipynb
+│   └── day08_3d_cnn.ipynb
 ├── data/
 │   ├── raw/                     # Raw .mat files (git-ignored)
 │   ├── processed/               # PCA & scaled outputs (git-ignored)
@@ -113,13 +132,14 @@ Explore each day's concepts and step-by-step verified outputs:
 - [`notebooks/day03_data_exploration.ipynb`](notebooks/day03_data_exploration.ipynb): Numerical health audits, spectral curves, and false-color compositing.
 - [`notebooks/day04_pca.ipynb`](notebooks/day04_pca.ipynb): Hughes phenomenon, PCA reduction, scree plots, and variance analysis.
 - [`notebooks/day05_normalization.ipynb`](notebooks/day05_normalization.ipynb): Standardization vs. Min-Max scaling, zero-variance safeguards, and model persistence.
+- [`notebooks/day08_3d_cnn.ipynb`](notebooks/day08_3d_cnn.ipynb): 3D-CNN architecture, 5D tensor layouts, central-pixel patch extraction with reflection padding, parameter counting, and PyTorch backward pass verification.
 
 To launch Jupyter Lab / Notebook:
 ```bash
 jupyter lab notebooks/
 ```
 
-### 3. Running Pipeline Scripts
+### 3. Running Pipeline Scripts & Tests
 
 ```bash
 # Day 2: Ingest Salinas dataset (verifies or auto-downloads to data/raw/)
@@ -135,7 +155,10 @@ python scripts/run_day4_pca.py --n-components 15
 python scripts/run_day5_scale.py --method standard
 python scripts/run_day5_scale.py --method minmax
 
-# Run all 18 automated test suites
+# Day 8: Run 3D-CNN baseline model & patch extraction verification tests
+pytest tests/test_cnn3d.py tests/test_patches.py
+
+# Run all 31 automated test suites across the repository
 pytest
 ```
 
