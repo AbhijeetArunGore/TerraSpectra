@@ -100,7 +100,8 @@ Tetraspectra/
 │   ├── day03_data_exploration.ipynb
 │   ├── day04_pca.ipynb
 │   ├── day05_normalization.ipynb
-│   └── day08_3d_cnn.ipynb
+│   ├── day08_3d_cnn.ipynb
+│   └── day09_dataloaders.ipynb
 ├── data/
 │   ├── raw/                     # Raw .mat files (git-ignored)
 │   ├── processed/               # PCA & scaled outputs (git-ignored)
@@ -141,6 +142,7 @@ Explore each day's concepts and step-by-step verified outputs:
 - [`notebooks/day04_pca.ipynb`](notebooks/day04_pca.ipynb): Hughes phenomenon, PCA reduction, scree plots, and variance analysis.
 - [`notebooks/day05_normalization.ipynb`](notebooks/day05_normalization.ipynb): Standardization vs. Min-Max scaling, zero-variance safeguards, and model persistence.
 - [`notebooks/day08_3d_cnn.ipynb`](notebooks/day08_3d_cnn.ipynb): 3D-CNN architecture, 5D tensor layouts, central-pixel patch extraction with reflection padding, parameter counting, and PyTorch backward pass verification.
+- [`notebooks/day09_dataloaders.ipynb`](notebooks/day09_dataloaders.ipynb): HyperspectralPatchDataset, 5D tensor batches, stratified train/val/test splits, class-label remapping, and smoke test integration with Day 8 3D-CNN.
 
 To launch Jupyter Lab / Notebook:
 ```bash
