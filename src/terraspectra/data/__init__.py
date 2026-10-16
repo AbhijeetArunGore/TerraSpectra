@@ -20,6 +20,12 @@ from terraspectra.data.patches import (
     validate_patch_parameters,
     iter_pixel_patches,
 )
+from terraspectra.data.dataset import (
+    HyperspectralPatchDataset,
+    DataLoaderMetadata,
+    split_hyperspectral_samples,
+    create_dataloaders,
+)
 
 __all__ = [
     "SalinasDataset",
@@ -36,5 +42,9 @@ __all__ = [
     "pad_cube_spatially",
     "validate_patch_parameters",
     "iter_pixel_patches",
+    "HyperspectralPatchDataset",
+    "DataLoaderMetadata",
+    "split_hyperspectral_samples",
+    "create_dataloaders",
 ]
 

@@ -2,11 +2,11 @@
 
 **Hyperspectral Data Engineering, Preprocessing, Deep Learning, and Interactive Visualization Platform**
 
-TerraSpectra is an end-to-end hyperspectral remote sensing platform. This repository implements Days 1–8 of the 30-day roadmap, covering hyperspectral ingestion, validation, exploratory analysis, PCA dimensionality reduction, feature scaling, a high-performance Deck.gl interactive visualization scaffold, and a genuine 3D-CNN baseline architecture in PyTorch.
+TerraSpectra is an end-to-end hyperspectral remote sensing platform. This repository implements Days 1–9 of the 30-day roadmap, covering hyperspectral ingestion, validation, exploratory analysis, PCA dimensionality reduction, feature scaling, a high-performance Deck.gl interactive visualization scaffold, a genuine 3D-CNN baseline architecture, and production-grade PyTorch DataLoaders.
 
 ---
 
-## Roadmap Scope (Days 1–8)
+## Roadmap Scope (Days 1–9)
 
 - **Day 1: Repository & Python Environment**
   - Reproducible virtual environment and dependency configuration (`requirements.txt`, `pyproject.toml`).
@@ -45,6 +45,12 @@ TerraSpectra is an end-to-end hyperspectral remote sensing platform. This reposi
   - Dual 3D convolution stages with BatchNorm3d, ReLU, and Adaptive 3D Average Pooling (`(1, 1, 1)`) decoupling spatial/spectral input sizes from dense classifier weights (~24.2k parameters).
   - Verification on both raw 204-band spectral cubes and 15-band PCA-reduced cubes.
   - Comprehensive unit test suite (forward pass, backward gradient propagation, shape checks, CPU execution) and step-by-step verified learning notebook.
+- **Day 9: PyTorch DataLoaders for Hyperspectral Tensor Batches**
+  - Custom `HyperspectralPatchDataset` yielding 5D-compatible tensors `(1, D, H, W)` and zero-indexed `torch.long` targets.
+  - Reusable `create_dataloaders(...)` generating reproducible train, validation, and test loaders with stratified sampling (70/15/15%).
+  - Pre-padded $O(1)$ patch slicing preventing repeated padding allocations across 37,000+ training iterations.
+  - Strict documentation of the spatial autocorrelation caveat in pixel-based random splits.
+  - Full compatibility and verified forward pass with Day 8 `Hyperspectral3DCNN`.
 
 ---
 
@@ -63,7 +69,8 @@ Tetraspectra/
 │       │   ├── __init__.py
 │       │   ├── loader.py        # Dataset loading, validation, downloading
 │       │   ├── exploration.py   # Spectral inspection, signatures, false-color
-│       │   └── patches.py       # Spatial patch extraction & reflection padding
+│       │   ├── patches.py       # Spatial patch extraction & reflection padding
+│       │   └── dataset.py       # PyTorch Dataset, stratified splits & DataLoaders
 │       ├── models/
 │       │   ├── __init__.py
 │       │   └── cnn3d.py         # Hyperspectral 3D-CNN architecture & config
@@ -86,7 +93,8 @@ Tetraspectra/
 │   ├── test_pca.py
 │   ├── test_scaling.py
 │   ├── test_cnn3d.py
-│   └── test_patches.py
+│   ├── test_patches.py
+│   └── test_dataset.py
 ├── notebooks/
 │   ├── day02_data_loading.ipynb
 │   ├── day03_data_exploration.ipynb
@@ -155,10 +163,10 @@ python scripts/run_day4_pca.py --n-components 15
 python scripts/run_day5_scale.py --method standard
 python scripts/run_day5_scale.py --method minmax
 
-# Day 8: Run 3D-CNN baseline model & patch extraction verification tests
-pytest tests/test_cnn3d.py tests/test_patches.py
+# Day 8 & Day 9: Run 3D-CNN baseline model & DataLoader verification tests
+pytest tests/test_cnn3d.py tests/test_patches.py tests/test_dataset.py
 
-# Run all 31 automated test suites across the repository
+# Run all 43 automated test suites across the repository
 pytest
 ```
 
