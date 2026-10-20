@@ -27,19 +27,39 @@ data/processed/
 outputs/models/*.joblib
 outputs/data/
 
+# Model Checkpoints & Large Neural Network Weights (Day 10+)
+outputs/checkpoints/
+*.pt
+*.pth
+*.ckpt
+*.bin
+*.onnx
+*.safetensors
+*.h5
+
 # Frontend dependencies and builds
 frontend/node_modules/
 frontend/dist/
 frontend/.vite/
 
-# Environment variables and secrets
+# Environment variables, local secrets, and credentials
 .env
 .env.local
-.env.*.local
+.env.*
+!.env.example
 frontend/.env
 frontend/.env.local
-frontend/.env.*.local
+frontend/.env.*
+!frontend/.env.example
+*.pem
+*.key
+*.cert
+*.crt
 
-# Miscellaneous User Artifacts
+# Miscellaneous User Artifacts & OS/IDE Cache
 *.pdf
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
 

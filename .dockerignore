@@ -1,0 +1,61 @@
+# Git & Version Control
+.git/
+.gitignore
+.gitattributes
+
+# Python Virtual Environments & Packages
+.venv/
+venv/
+env/
+ENV/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+*.egg-info/
+
+# Hyperspectral Datasets & Raw Files
+data/raw/
+data/processed/
+*.mat
+*.tar.gz
+*.zip
+*.npz
+
+# Deep Learning Checkpoints & Weights
+outputs/checkpoints/
+*.pt
+*.pth
+*.ckpt
+*.bin
+*.onnx
+*.safetensors
+*.h5
+
+# Frontend dependencies & build artifacts
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# Secrets, Environment Files & Keys
+.env
+.env.*
+!.env.example
+frontend/.env
+frontend/.env.*
+!frontend/.env.example
+*.pem
+*.key
+*.cert
+*.crt
+
+# OS & Editor Artifacts
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+resume.pdf
