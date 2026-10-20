@@ -15,6 +15,12 @@ from terraspectra.models.train import (
     train_one_epoch,
     validate_one_epoch,
 )
+from terraspectra.models.eval import (
+    ClassEvaluationMetrics,
+    EvaluationReport,
+    evaluate_model,
+    plot_confusion_matrix,
+)
 
 __all__ = [
     "Hyperspectral3DCNN",
@@ -30,4 +36,8 @@ __all__ = [
     "save_checkpoint",
     "load_checkpoint",
     "train_model",
+    "ClassEvaluationMetrics",
+    "EvaluationReport",
+    "evaluate_model",
+    "plot_confusion_matrix",
 ]
