@@ -2,11 +2,11 @@
 
 **Hyperspectral Data Engineering, Preprocessing, Deep Learning, and Interactive Visualization Platform**
 
-TerraSpectra is an end-to-end hyperspectral remote sensing platform. This repository implements Days 1–9 of the 30-day roadmap, covering hyperspectral ingestion, validation, exploratory analysis, PCA dimensionality reduction, feature scaling, a high-performance Deck.gl interactive visualization scaffold, a genuine 3D-CNN baseline architecture, and production-grade PyTorch DataLoaders.
+TerraSpectra is an end-to-end hyperspectral remote sensing platform. This repository implements Days 1–10 of the 30-day roadmap, covering hyperspectral ingestion, validation, exploratory analysis, PCA dimensionality reduction, feature scaling, a high-performance Deck.gl interactive visualization scaffold, a genuine 3D-CNN baseline architecture, PyTorch DataLoaders, and reproducible baseline model training.
 
 ---
 
-## Roadmap Scope (Days 1–9)
+## Roadmap Scope (Days 1–10)
 
 - **Day 1: Repository & Python Environment**
   - Reproducible virtual environment and dependency configuration (`requirements.txt`, `pyproject.toml`).
@@ -51,6 +51,12 @@ TerraSpectra is an end-to-end hyperspectral remote sensing platform. This reposi
   - Pre-padded $O(1)$ patch slicing preventing repeated padding allocations across 37,000+ training iterations.
   - Strict documentation of the spatial autocorrelation caveat in pixel-based random splits.
   - Full compatibility and verified forward pass with Day 8 `Hyperspectral3DCNN`.
+- **Day 10: Baseline 3D-CNN Supervised Training & Checkpointing**
+  - Complete training pipeline (`train_model`, `train_one_epoch`, `validate_one_epoch`) with AdamW and `nn.CrossEntropyLoss`.
+  - Sample-weighted loss and multiclass accuracy aggregation handling incomplete final batches.
+  - Atomic checkpoint persistence (`outputs/checkpoints/best_3d_cnn.pt`) with full model config, epoch, metric, and class-mapping metadata.
+  - Hardened `.gitignore` and `.dockerignore` ensuring checkpoints and secrets remain excluded from version control.
+  - Interactive learning notebook (`notebooks/day10_train_3d_cnn.ipynb`) executing a verified training run on Salinas.
 
 ---
 
@@ -59,6 +65,8 @@ TerraSpectra is an end-to-end hyperspectral remote sensing platform. This reposi
 ```text
 Tetraspectra/
 ├── .gitignore
+├── .dockerignore
+├── .env.example
 ├── pyproject.toml
 ├── requirements.txt
 ├── README.md
@@ -73,7 +81,8 @@ Tetraspectra/
 │       │   └── dataset.py       # PyTorch Dataset, stratified splits & DataLoaders
 │       ├── models/
 │       │   ├── __init__.py
-│       │   └── cnn3d.py         # Hyperspectral 3D-CNN architecture & config
+│       │   ├── cnn3d.py         # Hyperspectral 3D-CNN architecture & config
+│       │   └── train.py         # Training loop, validation & checkpointing
 │       ├── processing/
 │       │   ├── __init__.py
 │       │   ├── pca.py           # PCA dimensionality reduction
@@ -94,19 +103,22 @@ Tetraspectra/
 │   ├── test_scaling.py
 │   ├── test_cnn3d.py
 │   ├── test_patches.py
-│   └── test_dataset.py
+│   ├── test_dataset.py
+│   └── test_train.py
 ├── notebooks/
 │   ├── day02_data_loading.ipynb
 │   ├── day03_data_exploration.ipynb
 │   ├── day04_pca.ipynb
 │   ├── day05_normalization.ipynb
 │   ├── day08_3d_cnn.ipynb
-│   └── day09_dataloaders.ipynb
+│   ├── day09_dataloaders.ipynb
+│   └── day10_train_3d_cnn.ipynb
 ├── data/
 │   ├── raw/                     # Raw .mat files (git-ignored)
 │   ├── processed/               # PCA & scaled outputs (git-ignored)
 │   └── test_fixtures/           # Synthetic fixtures for automated tests
 ├── outputs/
+│   ├── checkpoints/             # Best model checkpoints (git-ignored)
 │   ├── figures/                 # Generated plots and false-color composites
 │   └── reports/                 # Exploration and variance reports
 └── frontend/                    # Vite + React + TypeScript + Deck.gl
@@ -143,6 +155,7 @@ Explore each day's concepts and step-by-step verified outputs:
 - [`notebooks/day05_normalization.ipynb`](notebooks/day05_normalization.ipynb): Standardization vs. Min-Max scaling, zero-variance safeguards, and model persistence.
 - [`notebooks/day08_3d_cnn.ipynb`](notebooks/day08_3d_cnn.ipynb): 3D-CNN architecture, 5D tensor layouts, central-pixel patch extraction with reflection padding, parameter counting, and PyTorch backward pass verification.
 - [`notebooks/day09_dataloaders.ipynb`](notebooks/day09_dataloaders.ipynb): HyperspectralPatchDataset, 5D tensor batches, stratified train/val/test splits, class-label remapping, and smoke test integration with Day 8 3D-CNN.
+- [`notebooks/day10_train_3d_cnn.ipynb`](notebooks/day10_train_3d_cnn.ipynb): Supervised 3D-CNN training loop, AdamW optimizer, loss descent curves, atomic checkpoint saving, and reload verification.
 
 To launch Jupyter Lab / Notebook:
 ```bash
@@ -165,10 +178,10 @@ python scripts/run_day4_pca.py --n-components 15
 python scripts/run_day5_scale.py --method standard
 python scripts/run_day5_scale.py --method minmax
 
-# Day 8 & Day 9: Run 3D-CNN baseline model & DataLoader verification tests
-pytest tests/test_cnn3d.py tests/test_patches.py tests/test_dataset.py
+# Run Day 8, 9, 10 deep learning test suites
+pytest tests/test_cnn3d.py tests/test_patches.py tests/test_dataset.py tests/test_train.py
 
-# Run all 43 automated test suites across the repository
+# Run all 51 automated test suites across the repository
 pytest
 ```
 
