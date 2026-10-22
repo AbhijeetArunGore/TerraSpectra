@@ -21,6 +21,13 @@ from terraspectra.models.eval import (
     evaluate_model,
     plot_confusion_matrix,
 )
+from terraspectra.models.vit import (
+    HyperspectralViT,
+    HyperspectralViTConfig,
+    PatchTokenizer,
+    TransformerEncoderBlock,
+    build_vit,
+)
 
 __all__ = [
     "Hyperspectral3DCNN",
@@ -40,4 +47,9 @@ __all__ = [
     "EvaluationReport",
     "evaluate_model",
     "plot_confusion_matrix",
+    "HyperspectralViT",
+    "HyperspectralViTConfig",
+    "PatchTokenizer",
+    "TransformerEncoderBlock",
+    "build_vit",
 ]

@@ -2,11 +2,11 @@
 
 **Hyperspectral Data Engineering, Preprocessing, Deep Learning, and Interactive Visualization Platform**
 
-TerraSpectra is an end-to-end hyperspectral remote sensing platform. This repository implements Days 1–11 of the 30-day roadmap, covering hyperspectral ingestion, validation, exploratory analysis, PCA dimensionality reduction, feature scaling, a high-performance Deck.gl interactive visualization scaffold, a genuine 3D-CNN baseline architecture, PyTorch DataLoaders, reproducible baseline model training, rigorous test-set evaluation, and security-conscious release hygiene.
+TerraSpectra is an end-to-end hyperspectral remote sensing platform. This repository implements Days 1–12 of the 30-day roadmap, covering hyperspectral ingestion, validation, exploratory analysis, PCA dimensionality reduction, feature scaling, a high-performance Deck.gl interactive visualization scaffold, a genuine 3D-CNN baseline architecture, PyTorch DataLoaders, reproducible baseline model training, rigorous test-set evaluation, and Vision Transformer (ViT) spatial-spectral tokenization with self-attention.
 
 ---
 
-## Roadmap Scope (Days 1–11)
+## Roadmap Scope (Days 1–12)
 
 - **Day 1: Repository & Python Environment**
   - Reproducible virtual environment and dependency configuration (`requirements.txt`, `pyproject.toml`).
@@ -65,6 +65,14 @@ TerraSpectra is an end-to-end hyperspectral remote sensing platform. This reposi
   - Checkpoint reload and forward-pass reproducibility verification against bit-level drift.
   - Unit tests (`tests/test_evaluation.py`) validating zero-division safety, incomplete final batch handling, weight immutability, and deterministic reproducibility.
   - Mandatory GitHub security audit ensuring no checkpoints, large datasets, or credentials are leaked.
+- **Day 12: Vision Transformer (ViT), Tokenization & Self-Attention**
+  - Modular Vision Transformer implementation (`src/terraspectra/models/vit.py`) tailored for hyperspectral spatial patches.
+  - Spatial tokenization (`PatchTokenizer`) projecting $7 \times 7$ spatial patches with 15 spectral bands into sequences of $N=49$ tokens in embedding space ($E=64$).
+  - Learnable 1D/2D positional embeddings preserving 2D spatial coordinate awareness within the receptive field.
+  - Pre-LayerNorm Transformer encoder blocks with Multi-Head Self-Attention ($h=4, d_k=16$) and GELU MLP feed-forward networks.
+  - Inspection interface for per-head attention weight matrices without altering standard model output contracts.
+  - 11 unit tests in `tests/test_vit.py` validating rank checks, embedding dimension divisibility, attention matrix normalization, gradient flow, and CPU inference (69 total tests passing).
+  - Interactive educational learning notebook (`notebooks/day12_vit_self_attention.ipynb`) demonstrating tokenization, attention heatmaps, and forward-pass tensor compatibility on Salinas.
 
 ---
 
@@ -91,7 +99,8 @@ Tetraspectra/
 │       │   ├── __init__.py
 │       │   ├── cnn3d.py         # Hyperspectral 3D-CNN architecture & config
 │       │   ├── train.py         # Training loop, validation & checkpointing
-│       │   └── eval.py          # Rigorous metrics, error analysis & confusion matrix
+│       │   ├── eval.py          # Rigorous metrics, error analysis & confusion matrix
+│       │   └── vit.py           # Vision Transformer, tokenization & self-attention
 │       ├── processing/
 │       │   ├── __init__.py
 │       │   ├── pca.py           # PCA dimensionality reduction
@@ -114,7 +123,8 @@ Tetraspectra/
 │   ├── test_patches.py
 │   ├── test_dataset.py
 │   ├── test_train.py
-│   └── test_evaluation.py
+│   ├── test_evaluation.py
+│   └── test_vit.py
 ├── notebooks/
 │   ├── day02_data_loading.ipynb
 │   ├── day03_data_exploration.ipynb
@@ -123,7 +133,8 @@ Tetraspectra/
 │   ├── day08_3d_cnn.ipynb
 │   ├── day09_dataloaders.ipynb
 │   ├── day10_train_3d_cnn.ipynb
-│   └── day11_model_evaluation.ipynb
+│   ├── day11_model_evaluation.ipynb
+│   └── day12_vit_self_attention.ipynb
 ├── data/
 │   ├── raw/                     # Raw .mat files (git-ignored)
 │   ├── processed/               # PCA & scaled outputs (git-ignored)
@@ -168,6 +179,7 @@ Explore each day's concepts and step-by-step verified outputs:
 - [`notebooks/day09_dataloaders.ipynb`](notebooks/day09_dataloaders.ipynb): HyperspectralPatchDataset, 5D tensor batches, stratified train/val/test splits, class-label remapping, and smoke test integration with Day 8 3D-CNN.
 - [`notebooks/day10_train_3d_cnn.ipynb`](notebooks/day10_train_3d_cnn.ipynb): Supervised 3D-CNN training loop, AdamW optimizer, loss descent curves, atomic checkpoint saving, and reload verification.
 - [`notebooks/day11_model_evaluation.ipynb`](notebooks/day11_model_evaluation.ipynb): Rigorous 3D-CNN evaluation on held-out test split, overall and per-class metrics, confusion matrix analysis, and agronomic error investigation.
+- [`notebooks/day12_vit_self_attention.ipynb`](notebooks/day12_vit_self_attention.ipynb): Vision Transformer (ViT) spatial tokenization, learnable positional embeddings, multi-head self-attention, and forward-pass tensor verification.
 
 To launch Jupyter Lab / Notebook:
 ```bash
@@ -190,10 +202,10 @@ python scripts/run_day4_pca.py --n-components 15
 python scripts/run_day5_scale.py --method standard
 python scripts/run_day5_scale.py --method minmax
 
-# Run Day 8, 9, 10, 11 deep learning test suites
-pytest tests/test_cnn3d.py tests/test_patches.py tests/test_dataset.py tests/test_train.py tests/test_evaluation.py
+# Run Day 8, 9, 10, 11, 12 deep learning test suites
+pytest tests/test_cnn3d.py tests/test_patches.py tests/test_dataset.py tests/test_train.py tests/test_evaluation.py tests/test_vit.py
 
-# Run all 58 automated test suites across the repository
+# Run all 69 automated test suites across the repository
 pytest
 ```
 
