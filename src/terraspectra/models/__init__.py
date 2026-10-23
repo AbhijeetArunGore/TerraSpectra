@@ -28,6 +28,11 @@ from terraspectra.models.vit import (
     TransformerEncoderBlock,
     build_vit,
 )
+from terraspectra.models.hybrid import (
+    HyperspectralHybridCNNViT,
+    HyperspectralHybridConfig,
+    build_hybrid,
+)
 
 __all__ = [
     "Hyperspectral3DCNN",
@@ -52,4 +57,7 @@ __all__ = [
     "PatchTokenizer",
     "TransformerEncoderBlock",
     "build_vit",
+    "HyperspectralHybridCNNViT",
+    "HyperspectralHybridConfig",
+    "build_hybrid",
 ]

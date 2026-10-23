@@ -2,11 +2,11 @@
 
 **Hyperspectral Data Engineering, Preprocessing, Deep Learning, and Interactive Visualization Platform**
 
-TerraSpectra is an end-to-end hyperspectral remote sensing platform. This repository implements Days 1–12 of the 30-day roadmap, covering hyperspectral ingestion, validation, exploratory analysis, PCA dimensionality reduction, feature scaling, a high-performance Deck.gl interactive visualization scaffold, a genuine 3D-CNN baseline architecture, PyTorch DataLoaders, reproducible baseline model training, rigorous test-set evaluation, and Vision Transformer (ViT) spatial-spectral tokenization with self-attention.
+TerraSpectra is an end-to-end hyperspectral remote sensing platform. This repository implements Days 1–13 of the 30-day roadmap, covering hyperspectral ingestion, validation, exploratory analysis, PCA dimensionality reduction, feature scaling, a high-performance Deck.gl interactive visualization scaffold, a genuine 3D-CNN baseline architecture, PyTorch DataLoaders, reproducible baseline model training, rigorous test-set evaluation, Vision Transformer (ViT) spatial-spectral tokenization, and a unified CNN–ViT Hybrid Fusion Network.
 
 ---
 
-## Roadmap Scope (Days 1–12)
+## Roadmap Scope (Days 1–13)
 
 - **Day 1: Repository & Python Environment**
   - Reproducible virtual environment and dependency configuration (`requirements.txt`, `pyproject.toml`).
@@ -73,6 +73,12 @@ TerraSpectra is an end-to-end hyperspectral remote sensing platform. This reposi
   - Inspection interface for per-head attention weight matrices without altering standard model output contracts.
   - 11 unit tests in `tests/test_vit.py` validating rank checks, embedding dimension divisibility, attention matrix normalization, gradient flow, and CPU inference (69 total tests passing).
   - Interactive educational learning notebook (`notebooks/day12_vit_self_attention.ipynb`) demonstrating tokenization, attention heatmaps, and forward-pass tensor compatibility on Salinas.
+- **Day 13: CNN–ViT Hybrid Fusion Network**
+  - Dual-branch spatial-spectral classification model (`src/terraspectra/models/hybrid.py`) combining local 3D convolutions with global multi-head self-attention.
+  - Clean intermediate feature extraction (`extract_features`) added to both `Hyperspectral3DCNN` ($D_{\text{cnn}}=32$) and `HyperspectralViT` ($D_{\text{vit}}=64$).
+  - Feature concatenation ($D_{\text{raw}}=96$) followed by a regularized `LayerNorm(64) + GELU + Dropout(0.2)` fusion projection and linear classification head ($103,000$ total parameters).
+  - 11 unit tests in `tests/test_hybrid.py` validating batch size 1 and $>1$, shape alignments, gradient propagation across all branches, invalid input rejection, and CPU execution (80 total tests passing).
+  - Interactive educational learning notebook (`notebooks/day13_hybrid_fusion.ipynb`) demonstrating architectural information flow, feature extraction stem plots, and forward-pass sanity checks on untrained weights.
 
 ---
 
@@ -100,7 +106,8 @@ Tetraspectra/
 │       │   ├── cnn3d.py         # Hyperspectral 3D-CNN architecture & config
 │       │   ├── train.py         # Training loop, validation & checkpointing
 │       │   ├── eval.py          # Rigorous metrics, error analysis & confusion matrix
-│       │   └── vit.py           # Vision Transformer, tokenization & self-attention
+│       │   ├── vit.py           # Vision Transformer, tokenization & self-attention
+│       │   └── hybrid.py        # CNN-ViT Hybrid Fusion Network architecture
 │       ├── processing/
 │       │   ├── __init__.py
 │       │   ├── pca.py           # PCA dimensionality reduction
@@ -124,7 +131,8 @@ Tetraspectra/
 │   ├── test_dataset.py
 │   ├── test_train.py
 │   ├── test_evaluation.py
-│   └── test_vit.py
+│   ├── test_vit.py
+│   └── test_hybrid.py
 ├── notebooks/
 │   ├── day02_data_loading.ipynb
 │   ├── day03_data_exploration.ipynb
@@ -134,7 +142,8 @@ Tetraspectra/
 │   ├── day09_dataloaders.ipynb
 │   ├── day10_train_3d_cnn.ipynb
 │   ├── day11_model_evaluation.ipynb
-│   └── day12_vit_self_attention.ipynb
+│   ├── day12_vit_self_attention.ipynb
+│   └── day13_hybrid_fusion.ipynb
 ├── data/
 │   ├── raw/                     # Raw .mat files (git-ignored)
 │   ├── processed/               # PCA & scaled outputs (git-ignored)
@@ -180,6 +189,7 @@ Explore each day's concepts and step-by-step verified outputs:
 - [`notebooks/day10_train_3d_cnn.ipynb`](notebooks/day10_train_3d_cnn.ipynb): Supervised 3D-CNN training loop, AdamW optimizer, loss descent curves, atomic checkpoint saving, and reload verification.
 - [`notebooks/day11_model_evaluation.ipynb`](notebooks/day11_model_evaluation.ipynb): Rigorous 3D-CNN evaluation on held-out test split, overall and per-class metrics, confusion matrix analysis, and agronomic error investigation.
 - [`notebooks/day12_vit_self_attention.ipynb`](notebooks/day12_vit_self_attention.ipynb): Vision Transformer (ViT) spatial tokenization, learnable positional embeddings, multi-head self-attention, and forward-pass tensor verification.
+- [`notebooks/day13_hybrid_fusion.ipynb`](notebooks/day13_hybrid_fusion.ipynb): CNN–ViT Hybrid Fusion Network architecture, dual-branch feature extraction, dimensional alignment, and forward-pass validation.
 
 To launch Jupyter Lab / Notebook:
 ```bash
@@ -202,10 +212,10 @@ python scripts/run_day4_pca.py --n-components 15
 python scripts/run_day5_scale.py --method standard
 python scripts/run_day5_scale.py --method minmax
 
-# Run Day 8, 9, 10, 11, 12 deep learning test suites
-pytest tests/test_cnn3d.py tests/test_patches.py tests/test_dataset.py tests/test_train.py tests/test_evaluation.py tests/test_vit.py
+# Run deep learning test suites
+pytest tests/test_cnn3d.py tests/test_patches.py tests/test_dataset.py tests/test_train.py tests/test_evaluation.py tests/test_vit.py tests/test_hybrid.py
 
-# Run all 69 automated test suites across the repository
+# Run all 80 automated test suites across the repository
 pytest
 ```
 

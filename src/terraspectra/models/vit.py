@@ -397,6 +397,54 @@ class HyperspectralViT(nn.Module):
             return logits, attn_weights_list
         return logits
 
+    @property
+    def feature_dim(self) -> int:
+        """Dimensionality of pooled latent token embeddings prior to the linear classifier."""
+        return self.config.embed_dim
+
+    def extract_features(self, x: torch.Tensor) -> torch.Tensor:
+        """
+        Extract pooled token feature representations prior to the final classification head.
+
+        Parameters
+        ----------
+        x : torch.Tensor
+            5D tensor of shape (batch, channels, depth, height, width).
+
+        Returns
+        -------
+        torch.Tensor
+            Pooled latent embedding representation of shape (batch, feature_dim).
+        """
+        self._validate_input_tensor(x)
+        B = x.shape[0]
+
+        # 1. Hyperspectral Tokenization: (B, C, D, H, W) -> (B, N, embed_dim)
+        tokens = self.tokenizer(x)
+
+        # 2. Append CLS token if configured
+        if self.cls_token is not None:
+            cls_tokens = self.cls_token.expand(B, -1, -1)
+            tokens = torch.cat([cls_tokens, tokens], dim=1)
+
+        # 3. Add Positional Embeddings
+        x_seq = self.pos_dropout(tokens + self.pos_embedding)
+
+        # 4. Pass through Transformer Encoder Blocks
+        for block in self.blocks:
+            x_seq, _ = block(x_seq, need_weights=False)
+
+        # 5. Final LayerNorm
+        x_seq = self.norm(x_seq)
+
+        # 6. Token Pooling
+        if self.config.pooling == "cls":
+            pooled = x_seq[:, 0]  # CLS token representation
+        else:
+            pooled = x_seq.mean(dim=1)  # Mean pooling over spatial tokens
+
+        return pooled
+
     def get_attention_weights(self, x: torch.Tensor) -> List[torch.Tensor]:
         """Convenience method to retrieve per-layer attention matrices without altering model state."""
         was_training = self.training

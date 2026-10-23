@@ -162,6 +162,38 @@ class Hyperspectral3DCNN(nn.Module):
         logits = self.classifier(pooled)
         return logits
 
+    @property
+    def feature_dim(self) -> int:
+        """Dimensionality of extracted spatial-spectral features prior to the dense classifier."""
+        return self.config.conv_channels[-1]
+
+    def extract_features(self, x: torch.Tensor) -> torch.Tensor:
+        """
+        Extract spatial-spectral feature representations prior to the classification head.
+
+        Parameters
+        ----------
+        x : torch.Tensor
+            5D tensor of shape (batch, channels, depth, height, width).
+
+        Returns
+        -------
+        torch.Tensor
+            Pooled convolutional feature representation of shape (batch, feature_dim).
+        """
+        if not isinstance(x, torch.Tensor):
+            raise TypeError(f"Expected torch.Tensor, got {type(x)}")
+
+        if x.ndim != 5:
+            raise ValueError(
+                f"3D-CNN expects a 5-dimensional tensor (batch, channels, depth, height, width), "
+                f"got {x.ndim}D tensor with shape {tuple(x.shape)}"
+            )
+
+        feat = self.features(x)
+        pooled = self.global_pool(feat)
+        return torch.flatten(pooled, 1)
+
     def count_parameters(self) -> Dict[str, int]:
         """Calculate total, trainable, and non-trainable parameter counts."""
         total = sum(p.numel() for p in self.parameters())
