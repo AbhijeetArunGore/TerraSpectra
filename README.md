@@ -2,11 +2,11 @@
 
 **Hyperspectral Data Engineering, Preprocessing, Deep Learning, and Interactive Visualization Platform**
 
-TerraSpectra is an end-to-end hyperspectral remote sensing platform. This repository implements Days 1–13 of the 30-day roadmap, covering hyperspectral ingestion, validation, exploratory analysis, PCA dimensionality reduction, feature scaling, a high-performance Deck.gl interactive visualization scaffold, a genuine 3D-CNN baseline architecture, PyTorch DataLoaders, reproducible baseline model training, rigorous test-set evaluation, Vision Transformer (ViT) spatial-spectral tokenization, and a unified CNN–ViT Hybrid Fusion Network.
+TerraSpectra is an end-to-end hyperspectral remote sensing platform. This repository implements Days 1–14 of the 30-day roadmap, covering hyperspectral ingestion, validation, exploratory analysis, PCA dimensionality reduction, feature scaling, a high-performance Deck.gl interactive visualization scaffold, a genuine 3D-CNN baseline architecture, PyTorch DataLoaders, reproducible baseline model training, rigorous test-set evaluation, Vision Transformer (ViT) spatial-spectral tokenization, a unified CNN–ViT Hybrid Fusion Network, and the Day 14 CNN-ViT Hybrid training pipeline.
 
 ---
 
-## Roadmap Scope (Days 1–13)
+## Roadmap Scope (Days 1–14)
 
 - **Day 1: Repository & Python Environment**
   - Reproducible virtual environment and dependency configuration (`requirements.txt`, `pyproject.toml`).
@@ -79,6 +79,13 @@ TerraSpectra is an end-to-end hyperspectral remote sensing platform. This reposi
   - Feature concatenation ($D_{\text{raw}}=96$) followed by a regularized `LayerNorm(64) + GELU + Dropout(0.2)` fusion projection and linear classification head ($103,000$ total parameters).
   - 11 unit tests in `tests/test_hybrid.py` validating batch size 1 and $>1$, shape alignments, gradient propagation across all branches, invalid input rejection, and CPU execution (80 total tests passing).
   - Interactive educational learning notebook (`notebooks/day13_hybrid_fusion.ipynb`) demonstrating architectural information flow, feature extraction stem plots, and forward-pass sanity checks on untrained weights.
+- **Day 14: Train the CNN–ViT Hybrid Fusion Network**
+  - Adapted training and validation pipeline (`train_model`, `save_checkpoint`, `load_checkpoint`) supporting seamless training of either the baseline 3D-CNN or the CNN-ViT Hybrid model without breaking Day 10 baselines.
+  - Regularization for high-parameter architectures: AdamW decoupled weight decay ($10^{-4}$) and active dropout ($p=0.2$) in the fusion projection head to prevent overfitting across 103,000 trainable parameters on 37,891 training samples.
+  - Atomic checkpoint persistence (`outputs/checkpoints/best_hybrid_cnn_vit.pt`) preserving Day 10's `best_3d_cnn.pt` intact and completely excluded by `.gitignore`.
+  - Standalone training entry script (`scripts/run_day14_train_hybrid.py`) with configurable epochs, learning rate, weight decay, dropout, and batch size.
+  - 5 focused unit tests in `tests/test_train_hybrid.py` validating optimization step convergence, gradient updates across both CNN and ViT streams, validation immutability, and checkpoint reload accuracy (85 total passing tests).
+  - Interactive educational learning notebook (`notebooks/day14_train_hybrid.ipynb`) demonstrating architectural complexity comparisons, AdamW regularization theory, a genuine 2-epoch training run on real Salinas DataLoaders, diagnostic loss/accuracy curves, and checkpoint reload verification.
 
 ---
 
@@ -120,6 +127,7 @@ Tetraspectra/
 │   ├── run_day3_explore.py
 │   ├── run_day4_pca.py
 │   ├── run_day5_scale.py
+│   ├── run_day14_train_hybrid.py
 │   └── build_day08_notebook.py
 ├── tests/
 │   ├── test_loader.py
@@ -132,7 +140,8 @@ Tetraspectra/
 │   ├── test_train.py
 │   ├── test_evaluation.py
 │   ├── test_vit.py
-│   └── test_hybrid.py
+│   ├── test_hybrid.py
+│   └── test_train_hybrid.py
 ├── notebooks/
 │   ├── day02_data_loading.ipynb
 │   ├── day03_data_exploration.ipynb
@@ -143,7 +152,8 @@ Tetraspectra/
 │   ├── day10_train_3d_cnn.ipynb
 │   ├── day11_model_evaluation.ipynb
 │   ├── day12_vit_self_attention.ipynb
-│   └── day13_hybrid_fusion.ipynb
+│   ├── day13_hybrid_fusion.ipynb
+│   └── day14_train_hybrid.ipynb
 ├── data/
 │   ├── raw/                     # Raw .mat files (git-ignored)
 │   ├── processed/               # PCA & scaled outputs (git-ignored)
@@ -190,6 +200,7 @@ Explore each day's concepts and step-by-step verified outputs:
 - [`notebooks/day11_model_evaluation.ipynb`](notebooks/day11_model_evaluation.ipynb): Rigorous 3D-CNN evaluation on held-out test split, overall and per-class metrics, confusion matrix analysis, and agronomic error investigation.
 - [`notebooks/day12_vit_self_attention.ipynb`](notebooks/day12_vit_self_attention.ipynb): Vision Transformer (ViT) spatial tokenization, learnable positional embeddings, multi-head self-attention, and forward-pass tensor verification.
 - [`notebooks/day13_hybrid_fusion.ipynb`](notebooks/day13_hybrid_fusion.ipynb): CNN–ViT Hybrid Fusion Network architecture, dual-branch feature extraction, dimensional alignment, and forward-pass validation.
+- [`notebooks/day14_train_hybrid.ipynb`](notebooks/day14_train_hybrid.ipynb): CNN–ViT Hybrid training pipeline, AdamW weight decay, fusion head dropout, 2-epoch verified training run, and checkpoint reload verification.
 
 To launch Jupyter Lab / Notebook:
 ```bash
@@ -212,10 +223,13 @@ python scripts/run_day4_pca.py --n-components 15
 python scripts/run_day5_scale.py --method standard
 python scripts/run_day5_scale.py --method minmax
 
-# Run deep learning test suites
-pytest tests/test_cnn3d.py tests/test_patches.py tests/test_dataset.py tests/test_train.py tests/test_evaluation.py tests/test_vit.py tests/test_hybrid.py
+# Day 14: Train CNN-ViT Hybrid model (defaults to 2-epoch smoke test)
+python scripts/run_day14_train_hybrid.py --epochs 2
 
-# Run all 80 automated test suites across the repository
+# Run deep learning test suites
+pytest tests/test_cnn3d.py tests/test_patches.py tests/test_dataset.py tests/test_train.py tests/test_evaluation.py tests/test_vit.py tests/test_hybrid.py tests/test_train_hybrid.py
+
+# Run all 85 automated test suites across the repository
 pytest
 ```
 

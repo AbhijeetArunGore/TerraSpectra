@@ -6,7 +6,7 @@ import logging
 import os
 import random
 import time
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass, field, is_dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple, Union
 
@@ -17,13 +17,14 @@ from torch.utils.data import DataLoader
 
 from terraspectra.data.dataset import DataLoaderMetadata
 from terraspectra.models.cnn3d import Hyperspectral3DCNN, Hyperspectral3DCNNConfig
+from terraspectra.models.hybrid import HyperspectralHybridCNNViT, HyperspectralHybridConfig
 
 logger = logging.getLogger(__name__)
 
 
 @dataclass
 class TrainingConfig:
-    """Hyperparameters and execution configuration for baseline 3D-CNN training."""
+    """Hyperparameters and execution configuration for 3D-CNN or Hybrid model training."""
     epochs: int = 5
     lr: float = 1e-3
     weight_decay: float = 1e-4
@@ -33,6 +34,7 @@ class TrainingConfig:
     checkpoint_filename: str = "best_3d_cnn.pt"
     save_best_only: bool = True
     monitor_metric: str = "val_loss"  # 'val_loss' (min) or 'val_acc' (max)
+    model_type: str = "3d_cnn"  # '3d_cnn' or 'hybrid'
 
     def __post_init__(self):
         if self.epochs < 1:
@@ -43,6 +45,9 @@ class TrainingConfig:
             raise ValueError(f"weight_decay cannot be negative, got {self.weight_decay}")
         if self.monitor_metric not in ("val_loss", "val_acc"):
             raise ValueError(f"monitor_metric must be 'val_loss' or 'val_acc', got {self.monitor_metric}")
+        valid_types = ("3d_cnn", "cnn3d", "cnn", "hybrid", "hybrid_cnn_vit", "cnn_vit")
+        if self.model_type.lower() not in valid_types:
+            raise ValueError(f"model_type must be one of {valid_types}, got '{self.model_type}'")
 
 
 @dataclass
@@ -125,6 +130,59 @@ def select_device(device_str: Optional[str] = None) -> torch.device:
         logger.warning("CUDA requested but not available; falling back to CPU.")
         return torch.device("cpu")
     return torch.device(target)
+
+
+def build_model_for_training(
+    model_type: str = "3d_cnn",
+    spectral_depth: int = 15,
+    spatial_size: int = 7,
+    num_classes: int = 16,
+    **kwargs: Any,
+) -> nn.Module:
+    """
+    Factory function to construct either the baseline 3D-CNN or the CNN-ViT Hybrid model.
+
+    Parameters
+    ----------
+    model_type : str
+        '3d_cnn' or 'hybrid' (case-insensitive).
+    spectral_depth : int
+        Number of spectral bands / components (default: 15).
+    spatial_size : int
+        Spatial window height and width (default: 7).
+    num_classes : int
+        Number of output classification classes (default: 16).
+    **kwargs : Any
+        Additional keyword arguments forwarded to the respective configuration.
+
+    Returns
+    -------
+    nn.Module
+        Instantiated model (Hyperspectral3DCNN or HyperspectralHybridCNNViT).
+    """
+    m_type = model_type.lower().strip()
+    if m_type in ("3d_cnn", "cnn3d", "cnn"):
+        cfg_kwargs = {
+            "spectral_depth": spectral_depth,
+            "spatial_size": spatial_size,
+            "num_classes": num_classes,
+        }
+        cfg_kwargs.update(kwargs)
+        cfg = Hyperspectral3DCNNConfig(**cfg_kwargs)
+        return Hyperspectral3DCNN(cfg)
+    elif m_type in ("hybrid", "hybrid_cnn_vit", "cnn_vit"):
+        cfg_kwargs = {
+            "spectral_depth": spectral_depth,
+            "spatial_size": spatial_size,
+            "num_classes": num_classes,
+        }
+        cfg_kwargs.update(kwargs)
+        cfg = HyperspectralHybridConfig(**cfg_kwargs)
+        return HyperspectralHybridCNNViT(cfg)
+    else:
+        raise ValueError(
+            f"Unsupported model_type '{model_type}'. Supported types: '3d_cnn', 'hybrid'."
+        )
 
 
 def train_one_epoch(
@@ -249,7 +307,7 @@ def save_checkpoint(
     val_loss: float = 0.0,
     val_acc: float = 0.0,
     metadata: Optional[DataLoaderMetadata] = None,
-    config: Optional[Union[Hyperspectral3DCNNConfig, Dict[str, Any]]] = None,
+    config: Optional[Union[Hyperspectral3DCNNConfig, HyperspectralHybridConfig, Dict[str, Any], Any]] = None,
 ) -> Path:
     """
     Atomically save a complete, reproducible model checkpoint to disk.
@@ -270,7 +328,7 @@ def save_checkpoint(
         Validation accuracy associated with this checkpoint.
     metadata : Optional[DataLoaderMetadata]
         Metadata detailing class mappings, splits, and spectral dimensions.
-    config : Optional[Hyperspectral3DCNNConfig | Dict]
+    config : Optional[Hyperspectral3DCNNConfig | HyperspectralHybridConfig | Dict]
         Model architecture configuration needed to reconstruct model.
 
     Returns
@@ -281,9 +339,15 @@ def save_checkpoint(
     target = Path(checkpoint_path)
     target.parent.mkdir(parents=True, exist_ok=True)
 
-    config_dict = asdict(config) if isinstance(config, Hyperspectral3DCNNConfig) else (config or {})
+    if is_dataclass(config) and not isinstance(config, type):
+        config_dict = asdict(config)
+    elif isinstance(config, dict):
+        config_dict = config
+    else:
+        config_dict = {}
 
     checkpoint_payload: Dict[str, Any] = {
+        "model_architecture": model.__class__.__name__,
         "model_state_dict": model.state_dict(),
         "optimizer_state_dict": optimizer.state_dict() if optimizer is not None else None,
         "epoch": epoch,
@@ -357,15 +421,17 @@ def train_model(
     val_loader: DataLoader,
     config: Optional[TrainingConfig] = None,
     metadata: Optional[DataLoaderMetadata] = None,
-    model_config: Optional[Hyperspectral3DCNNConfig] = None,
+    model_config: Optional[Union[Hyperspectral3DCNNConfig, HyperspectralHybridConfig, Any]] = None,
 ) -> Tuple[nn.Module, TrainingHistory]:
     """
     Orchestrate full model training across epochs with validation and checkpointing.
 
+    Supports both Hyperspectral3DCNN and HyperspectralHybridCNNViT models.
+
     Parameters
     ----------
     model : nn.Module
-        Hyperspectral3DCNN model instance.
+        Hyperspectral3DCNN or HyperspectralHybridCNNViT model instance.
     train_loader : DataLoader
         DataLoader providing training batches (shuffled).
     val_loader : DataLoader
@@ -374,7 +440,7 @@ def train_model(
         Training hyperparameters and configuration.
     metadata : Optional[DataLoaderMetadata]
         Metadata detailing dataset splits and class mappings.
-    model_config : Optional[Hyperspectral3DCNNConfig]
+    model_config : Optional[Hyperspectral3DCNNConfig | HyperspectralHybridConfig | Any]
         Model architecture configuration stored in checkpoint.
 
     Returns

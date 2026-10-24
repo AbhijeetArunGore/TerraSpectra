@@ -1,0 +1,50 @@
+{
+  "model_architecture": "HyperspectralHybridCNNViT",
+  "parameters": {
+    "total_parameters": 103000,
+    "trainable_parameters": 103000,
+    "non_trainable_parameters": 0,
+    "component_breakdown": {
+      "cnn_branch_parameters": 23352,
+      "vit_branch_parameters": 72272,
+      "fusion_projection_parameters": 6336,
+      "classifier_parameters": 1040
+    }
+  },
+  "hyperparameters": {
+    "epochs": 2,
+    "batch_size": 128,
+    "lr": 0.001,
+    "weight_decay": 0.0001,
+    "dropout_rate": 0.2,
+    "seed": 42,
+    "device": "cpu"
+  },
+  "history": {
+    "epochs": [
+      {
+        "epoch": 1,
+        "train_loss": 0.36099955917933735,
+        "train_acc": 0.9004512945026524,
+        "val_loss": 0.06321010427298467,
+        "val_acc": 0.9774575018477457,
+        "duration_seconds": 64.63250422477722,
+        "lr": 0.001
+      },
+      {
+        "epoch": 2,
+        "train_loss": 0.06357092666439097,
+        "train_acc": 0.9820537858594389,
+        "val_loss": 0.08495324728567631,
+        "val_acc": 0.9705592510470559,
+        "duration_seconds": 65.34571743011475,
+        "lr": 0.001
+      }
+    ],
+    "best_epoch": 1,
+    "best_val_loss": 0.06321010427298467,
+    "best_val_acc": 0.9774575018477457,
+    "checkpoint_path": "outputs\\checkpoints\\best_hybrid_cnn_vit.pt"
+  },
+  "total_duration_seconds": 133.11286759376526
+}
